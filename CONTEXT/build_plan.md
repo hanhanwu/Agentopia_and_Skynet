@@ -124,10 +124,18 @@ Use TypeScript for the initial platform and shared contracts. Add language-speci
 ### Phase 1: Foundation and Vertical Slice
 
 - [ ] Establish the monorepo and independent Agentopia, Skynet, shared-protocol, and Studio boundaries.
-- [ ] Define the first version of the activity event envelope and core event types.
-- [ ] Build a deterministic scenario with several simulated agents and tools.
+- [ ] Define the first version of the activity event envelope and core event types, including schema version, stable IDs, logical time, sequence, causality, provenance/source, and visibility metadata.
+- [ ] Represent world interactions as distinct, causally linked proposed-action, resolved-outcome, and delivered-observation events so intent, world state, and each actor's view remain distinguishable.
+- [ ] Route scenario, agent, replay, and UI actions through one runtime-validated, server-authoritative command path; use trusted in-process actor contexts in this phase rather than building production authentication.
+- [ ] Keep each run's canonical history as an append-only in-memory event stream with a seed, numeric simulated clock, stable tie-breaking, and recorded nondeterministic inputs.
+- [ ] Build a deterministic scenario with several scripted agents, deterministic resolvers, and typed environment tools with explicit read-only, state-changing, or observation effects.
+- [ ] Define a small interchangeable discovery-policy interface and implement one deterministic filtered/ranked policy that records candidates, validation, rejection reasons, ranking, returned results, and final selection.
+- [ ] Derive the Agentopia world, Skynet inspector, selection state, and shared timeline from the same event history and stable identifiers rather than maintaining independent UI state as truth.
 - [ ] Implement the combined Studio layout with the world, inspector, and shared timeline.
-- [ ] Visualize one complete flow: discover agents, select one, interact, verify the result, and replay the run.
+- [ ] Visualize one complete flow: discover agents, reject and rank candidates, select one, interact, use a tool, verify the result, and replay the run from its event history.
+- [ ] Implement one versioned Skynet verifier that emits derived observations linked to the exact supporting or contradicting events.
+- [ ] Define artifact references with digest, provenance, visibility, and redaction metadata; use fixture or in-memory artifact storage in this phase and keep sensitive or large content out of ordinary event payloads.
+- [ ] Preserve interfaces for task lifecycle events and state reconstruction, but defer durable asynchronous workers, retries, recovery, and persisted checkpoints until later phases.
 - [ ] Add fixtures and automated tests that make this demonstration reproducible.
 - [ ] Document how to run the vertical slice locally.
 
