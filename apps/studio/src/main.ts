@@ -49,30 +49,11 @@ const agentButton = (agent: Agent, placement: string) => `
 app.innerHTML = `
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Agentopia Studio home">
-        <span class="brand__mark" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="brand__wordmark">Agentopia</span>
-        <span class="brand__product">Studio</span>
-      </a>
-      <div class="topbar__context">
-        <span class="phase-pill"><i aria-hidden="true"></i> Phase 1</span>
-        <span class="run-label">World preview</span>
-      </div>
-      <button class="icon-button" type="button" aria-label="Settings unavailable in preview" disabled>
-        <span aria-hidden="true">•••</span>
-      </button>
+      <h1 class="brand">Agentopia</h1>
     </header>
 
     <main class="studio" aria-label="Agentopia Studio preview">
-      <section class="world-panel" aria-labelledby="world-title">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Agentopia world</p>
-            <h1 id="world-title">Morning in Luma</h1>
-          </div>
-          <div class="world-state"><span></span> Live preview</div>
-        </div>
-
+      <section class="world-panel" aria-label="Agentopia world">
         <div class="world-frame">
           <div class="world-scene" role="group" aria-label="Luma town map with two agents">
             <div class="sun-glow"></div>
@@ -118,10 +99,6 @@ app.innerHTML = `
             ${agentButton(agents['personal-assistant'], 'assistant')}
             ${agentButton(agents['cafe-service'], 'cafe')}
 
-            <div class="map-hint" aria-hidden="true">
-              <span class="map-hint__cursor">↖</span>
-              Activity appears in Skynet automatically
-            </div>
           </div>
           <div class="world-frame__corner world-frame__corner--tl"></div>
           <div class="world-frame__corner world-frame__corner--tr"></div>
@@ -135,31 +112,20 @@ app.innerHTML = `
             <span class="mochi-portrait__face"></span>
           </div>
           <label class="chat-composer__field">
-            <span>Message Mochi</span>
             <input
               name="message"
               type="text"
               maxlength="240"
               autocomplete="off"
-              placeholder="Ask Mochi to do something…"
+              placeholder="Message Mochi…"
               aria-label="Message Mochi"
               data-chat-input
             />
           </label>
           <button type="submit" data-chat-send>
-            <span>Send</span>
             <i aria-hidden="true">↗</i>
           </button>
         </form>
-
-        <div class="world-footer">
-          <div class="population"><span class="population__faces" aria-hidden="true">● ●</span> 2 agents in world</div>
-          <div class="world-controls" aria-label="World controls unavailable in preview">
-            <button type="button" disabled aria-label="Pause unavailable"><span aria-hidden="true">Ⅱ</span></button>
-            <button type="button" disabled aria-label="Center map unavailable"><span aria-hidden="true">⌖</span></button>
-            <span>UI preview · Simulation not started</span>
-          </div>
-        </div>
       </section>
 
       <aside class="inspector-panel" aria-labelledby="skynet-title">
@@ -192,14 +158,15 @@ app.innerHTML = `
           </div>
           <div class="status-row"><span></span><strong data-agent-status></strong></div>
           <section class="live-activity" data-live-activity hidden aria-live="polite">
-            <p>Latest action</p>
             <h4 data-activity-title></h4>
             <div class="live-activity__detail" data-activity-detail></div>
-            <dl>
-              <div><dt>Source</dt><dd data-activity-source></dd></div>
-              <div><dt>Event</dt><dd data-activity-event></dd></div>
-              <div><dt>Caused by</dt><dd data-activity-parent></dd></div>
-            </dl>
+            <div class="evidence">
+              <dl>
+                <div><dt>Source</dt><dd data-activity-source></dd></div>
+                <div><dt>Event</dt><dd data-activity-event></dd></div>
+                <div><dt>Caused by</dt><dd data-activity-parent></dd></div>
+              </dl>
+            </div>
           </section>
           <section class="event-history" data-event-history-section hidden>
             <div class="event-history__heading">
@@ -211,26 +178,9 @@ app.innerHTML = `
             </div>
             <div class="event-history__list" data-event-history-list></div>
           </section>
-          <p class="agent-description" data-agent-description></p>
-          <dl class="agent-facts">
-            <div><dt>Location</dt><dd data-agent-location></dd></div>
-            <div><dt>Source</dt><dd>Simulated</dd></div>
-            <div><dt>Activity</dt><dd data-agent-activity>No events yet</dd></div>
-          </dl>
-          <div class="coming-next">
-            <span>Next step</span>
-            <p>More causal evidence will appear here as the interaction continues.</p>
-          </div>
         </div>
       </aside>
     </main>
-
-    <footer class="timeline-shell" aria-label="Shared timeline placeholder">
-      <span class="timeline-shell__label">Shared timeline</span>
-      <div class="timeline-track" data-timeline-track><i></i></div>
-      <span class="timeline-shell__time" data-timeline-time>00:00</span>
-      <span class="timeline-shell__note" data-timeline-note>Begins with the first event</span>
-    </footer>
   </div>
 `;
 
@@ -244,9 +194,6 @@ const mochiBubble = document.querySelector<HTMLElement>('[data-mochi-bubble]');
 const lucaBubble = document.querySelector<HTMLElement>('[data-luca-bubble]');
 const agentLink = document.querySelector<HTMLElement>('[data-agent-link]');
 const liveActivity = document.querySelector<HTMLElement>('[data-live-activity]');
-const timelineTrack = document.querySelector<HTMLElement>('[data-timeline-track]');
-const timelineTime = document.querySelector<HTMLElement>('[data-timeline-time]');
-const timelineNote = document.querySelector<HTMLElement>('[data-timeline-note]');
 const eventHistorySection = document.querySelector<HTMLElement>('[data-event-history-section]');
 const eventHistoryList = document.querySelector<HTMLElement>('[data-event-history-list]');
 const eventCount = document.querySelector<HTMLElement>('[data-event-count]');
@@ -282,8 +229,6 @@ const selectAgent = (id: AgentId) => {
     role: agent.role,
     name: agent.name,
     status: agent.status,
-    description: agent.description,
-    location: agent.location,
   };
   Object.entries(values).forEach(([key, value]) => {
     const element = field(key);
@@ -346,35 +291,6 @@ const renderActivity = () => {
     });
   }
 
-  const activityCount = document.querySelector<HTMLElement>('[data-agent-activity]');
-  if (activityCount && selectedAgentId) {
-    const count = displayedEvents.filter(
-      (event) => event.actorId === selectedAgentId || event.subjectId === selectedAgentId,
-    ).length;
-    activityCount.textContent = count === 1 ? '1 event' : `${count} events`;
-  }
-
-  if (timelineTrack) {
-    timelineTrack.replaceChildren();
-    if (activityEvents.length === 0) {
-      timelineTrack.append(document.createElement('i'));
-    } else {
-      activityEvents.forEach((event, index) => {
-        const marker = document.createElement('button');
-        marker.type = 'button';
-        marker.className = `timeline-marker timeline-marker--${event.source}`;
-        marker.classList.toggle('is-current', index === (eventCursor ?? activityEvents.length - 1));
-        marker.title = event.type;
-        marker.setAttribute('aria-label', `Event ${event.sequence}: ${event.type}`);
-        marker.addEventListener('click', () => showHistoricalEvent(index));
-        timelineTrack.append(marker);
-      });
-    }
-  }
-  const displayedTime = displayedEvents.at(-1)?.logicalTime ?? 0;
-  if (timelineTime) timelineTime.textContent = `00:${String(displayedTime).padStart(2, '0')}`;
-  if (timelineNote && skynetProjection) timelineNote.textContent = skynetProjection.title;
-
   if (eventHistorySection) eventHistorySection.hidden = activityEvents.length === 0;
   if (eventCount) eventCount.textContent = activityEvents.length === 1 ? '1 event' : `${activityEvents.length} events`;
   if (eventHistoryList) {
@@ -387,9 +303,8 @@ const renderActivity = () => {
       button.type = 'button';
       button.className = 'event-history__item';
       button.classList.toggle('is-current', index === (eventCursor ?? activityEvents.length - 1));
-      button.innerHTML = `<span class="event-history__sequence">${String(event.sequence).padStart(2, '0')}</span><span class="event-history__copy"><strong></strong><small></small></span><i></i>`;
+      button.innerHTML = `<span class="event-history__sequence">${String(event.sequence).padStart(2, '0')}</span><span class="event-history__copy"><strong></strong></span><i></i>`;
       button.querySelector('strong')!.textContent = eventProjection.title;
-      button.querySelector('small')!.textContent = event.type;
       button.setAttribute('aria-label', `Review event ${event.sequence}: ${eventProjection.title}`);
       button.addEventListener('click', () => showHistoricalEvent(index));
       eventHistoryList.append(button);
