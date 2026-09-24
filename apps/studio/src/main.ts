@@ -1,6 +1,7 @@
 import './styles.css';
 import { agents, isAgentId, type Agent, type AgentId } from './agents.ts';
 import {
+  eventsAtCursor,
   isCafeTask,
   isMessageInTransit,
   projectLuca,
@@ -167,7 +168,7 @@ app.innerHTML = `
             <h2 id="skynet-title">Skynet</h2>
             <p class="inspector-context" data-inspector-context>Waiting for activity</p>
           </div>
-          <span class="inspector-badge"><i></i> Observing</span>
+          <span class="inspector-badge"><i></i> <span data-skynet-mode>Live</span></span>
         </div>
 
         <div class="empty-inspector" data-empty-inspector>
@@ -199,6 +200,16 @@ app.innerHTML = `
               <div><dt>Event</dt><dd data-activity-event></dd></div>
               <div><dt>Caused by</dt><dd data-activity-parent></dd></div>
             </dl>
+          </section>
+          <section class="event-history" data-event-history-section hidden>
+            <div class="event-history__heading">
+              <div>
+                <span>Event history</span>
+                <small data-event-count>0 events</small>
+              </div>
+              <button type="button" data-return-live hidden>Return to live</button>
+            </div>
+            <div class="event-history__list" data-event-history-list></div>
           </section>
           <p class="agent-description" data-agent-description></p>
           <dl class="agent-facts">
@@ -236,11 +247,17 @@ const liveActivity = document.querySelector<HTMLElement>('[data-live-activity]')
 const timelineTrack = document.querySelector<HTMLElement>('[data-timeline-track]');
 const timelineTime = document.querySelector<HTMLElement>('[data-timeline-time]');
 const timelineNote = document.querySelector<HTMLElement>('[data-timeline-note]');
+const eventHistorySection = document.querySelector<HTMLElement>('[data-event-history-section]');
+const eventHistoryList = document.querySelector<HTMLElement>('[data-event-history-list]');
+const eventCount = document.querySelector<HTMLElement>('[data-event-count]');
+const returnLiveButton = document.querySelector<HTMLButtonElement>('[data-return-live]');
+const skynetMode = document.querySelector<HTMLElement>('[data-skynet-mode]');
 
 const activityEvents: ActivityEvent[] = [];
 const runId = 'run-studio-preview';
 let eventSequence = 0;
 let selectedAgentId: AgentId | null = null;
+let eventCursor: number | null = null;
 let scheduledTimers: number[] = [];
 
 const field = (name: string) => document.querySelector<HTMLElement>(`[data-agent-${name}]`);
@@ -277,9 +294,10 @@ const selectAgent = (id: AgentId) => {
 };
 
 const renderActivity = () => {
-  const mochiProjection = projectMochi(activityEvents);
-  const lucaProjection = projectLuca(activityEvents);
-  const skynetProjection = projectSkynet(activityEvents);
+  const displayedEvents = eventsAtCursor(activityEvents, eventCursor);
+  const mochiProjection = projectMochi(displayedEvents);
+  const lucaProjection = projectLuca(displayedEvents);
+  const skynetProjection = projectSkynet(displayedEvents);
   const mochiButton = buttons.find((button) => button.dataset.agentId === 'personal-assistant');
   const lucaButton = buttons.find((button) => button.dataset.agentId === 'cafe-service');
 
@@ -301,7 +319,7 @@ const renderActivity = () => {
     lucaBubble.hidden = lucaProjection.bubble === null;
   }
   if (agentLink) {
-    agentLink.hidden = !isMessageInTransit(activityEvents);
+    agentLink.hidden = !isMessageInTransit(displayedEvents);
   }
 
   if (selectedAgentId === 'personal-assistant') {
@@ -330,7 +348,7 @@ const renderActivity = () => {
 
   const activityCount = document.querySelector<HTMLElement>('[data-agent-activity]');
   if (activityCount && selectedAgentId) {
-    const count = activityEvents.filter(
+    const count = displayedEvents.filter(
       (event) => event.actorId === selectedAgentId || event.subjectId === selectedAgentId,
     ).length;
     activityCount.textContent = count === 1 ? '1 event' : `${count} events`;
@@ -341,17 +359,64 @@ const renderActivity = () => {
     if (activityEvents.length === 0) {
       timelineTrack.append(document.createElement('i'));
     } else {
-      activityEvents.forEach((event) => {
-        const marker = document.createElement('span');
+      activityEvents.forEach((event, index) => {
+        const marker = document.createElement('button');
+        marker.type = 'button';
         marker.className = `timeline-marker timeline-marker--${event.source}`;
+        marker.classList.toggle('is-current', index === (eventCursor ?? activityEvents.length - 1));
         marker.title = event.type;
         marker.setAttribute('aria-label', `Event ${event.sequence}: ${event.type}`);
+        marker.addEventListener('click', () => showHistoricalEvent(index));
         timelineTrack.append(marker);
       });
     }
   }
-  if (timelineTime) timelineTime.textContent = `00:${String(eventSequence).padStart(2, '0')}`;
+  const displayedTime = displayedEvents.at(-1)?.logicalTime ?? 0;
+  if (timelineTime) timelineTime.textContent = `00:${String(displayedTime).padStart(2, '0')}`;
   if (timelineNote && skynetProjection) timelineNote.textContent = skynetProjection.title;
+
+  if (eventHistorySection) eventHistorySection.hidden = activityEvents.length === 0;
+  if (eventCount) eventCount.textContent = activityEvents.length === 1 ? '1 event' : `${activityEvents.length} events`;
+  if (eventHistoryList) {
+    eventHistoryList.replaceChildren();
+    activityEvents.forEach((event, index) => {
+      const eventProjection = projectSkynet(activityEvents.slice(0, index + 1));
+      if (!eventProjection) return;
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'event-history__item';
+      button.classList.toggle('is-current', index === (eventCursor ?? activityEvents.length - 1));
+      button.innerHTML = `<span class="event-history__sequence">${String(event.sequence).padStart(2, '0')}</span><span class="event-history__copy"><strong></strong><small></small></span><i></i>`;
+      button.querySelector('strong')!.textContent = eventProjection.title;
+      button.querySelector('small')!.textContent = event.type;
+      button.setAttribute('aria-label', `Review event ${event.sequence}: ${eventProjection.title}`);
+      button.addEventListener('click', () => showHistoricalEvent(index));
+      eventHistoryList.append(button);
+    });
+    const currentItem = eventHistoryList.querySelector<HTMLElement>('.is-current');
+    currentItem?.scrollIntoView({ block: 'nearest' });
+  }
+
+  const newerEventCount = eventCursor === null ? 0 : activityEvents.length - eventCursor - 1;
+  if (returnLiveButton) {
+    returnLiveButton.hidden = eventCursor === null;
+    returnLiveButton.textContent = newerEventCount > 0 ? `Return to live · ${newerEventCount} new` : 'Return to live';
+  }
+  if (skynetMode) skynetMode.textContent = eventCursor === null ? 'Live' : 'Reviewing';
+};
+
+const showHistoricalEvent = (index: number) => {
+  eventCursor = index;
+  const projection = projectSkynet(activityEvents.slice(0, index + 1));
+  if (projection) selectAgent(projection.agentId);
+};
+
+const returnToLive = () => {
+  eventCursor = null;
+  const projection = projectSkynet(activityEvents);
+  if (projection) selectAgent(projection.agentId);
+  else renderActivity();
 };
 
 const nextEnvelope = () => {
@@ -369,7 +434,7 @@ const nextEnvelope = () => {
 const appendActivityEvent = (event: ActivityEvent) => {
   activityEvents.push(event);
   const skynetProjection = projectSkynet(activityEvents);
-  if (skynetProjection) selectAgent(skynetProjection.agentId);
+  if (eventCursor === null && skynetProjection) selectAgent(skynetProjection.agentId);
   else renderActivity();
 };
 
@@ -380,6 +445,7 @@ const schedule = (delay: number, callback: () => void) => {
 const sendTaskToMochi = (message: string) => {
   scheduledTimers.forEach((timer) => window.clearTimeout(timer));
   scheduledTimers = [];
+  eventCursor = null;
 
   const taskEvent: ActivityEvent = {
     ...nextEnvelope(),
@@ -392,7 +458,7 @@ const sendTaskToMochi = (message: string) => {
   appendActivityEvent(taskEvent);
 
   let parentEventId = taskEvent.eventId;
-  schedule(800, () => {
+  schedule(2500, () => {
     const discoveryEvent: ActivityEvent = {
       ...nextEnvelope(),
       type: 'discovery.started',
@@ -407,7 +473,7 @@ const sendTaskToMochi = (message: string) => {
   });
 
   if (!isCafeTask(message)) {
-    schedule(1600, () => {
+    schedule(5000, () => {
       appendActivityEvent({
         ...nextEnvelope(),
         type: 'discovery.no-match',
@@ -424,7 +490,7 @@ const sendTaskToMochi = (message: string) => {
     return;
   }
 
-  schedule(1500, () => {
+  schedule(5000, () => {
     const event: ActivityEvent = {
       ...nextEnvelope(),
       type: 'discovery.candidate-found',
@@ -437,7 +503,7 @@ const sendTaskToMochi = (message: string) => {
     parentEventId = event.eventId;
     appendActivityEvent(event);
   });
-  schedule(2200, () => {
+  schedule(7500, () => {
     const event: ActivityEvent = {
       ...nextEnvelope(),
       type: 'discovery.candidate-validated',
@@ -450,7 +516,7 @@ const sendTaskToMochi = (message: string) => {
     parentEventId = event.eventId;
     appendActivityEvent(event);
   });
-  schedule(2900, () => {
+  schedule(10000, () => {
     const event: ActivityEvent = {
       ...nextEnvelope(),
       type: 'discovery.agent-selected',
@@ -463,7 +529,7 @@ const sendTaskToMochi = (message: string) => {
     parentEventId = event.eventId;
     appendActivityEvent(event);
   });
-  schedule(3600, () => {
+  schedule(12500, () => {
     const event: ActivityEvent = {
       ...nextEnvelope(),
       type: 'message.sent',
@@ -476,7 +542,7 @@ const sendTaskToMochi = (message: string) => {
     parentEventId = event.eventId;
     appendActivityEvent(event);
   });
-  schedule(4400, () => {
+  schedule(15000, () => {
     appendActivityEvent({
       ...nextEnvelope(),
       type: 'message.received',
@@ -496,6 +562,8 @@ buttons.forEach((button) => {
     }
   });
 });
+
+returnLiveButton?.addEventListener('click', returnToLive);
 
 chatForm?.addEventListener('submit', (event) => {
   event.preventDefault();

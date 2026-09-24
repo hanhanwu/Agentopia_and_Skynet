@@ -85,6 +85,11 @@ const cafeTerms = /\b(cafe|café|coffee|espresso|latte|matcha|tea|drink|beverage
 
 export const isCafeTask = (message: string): boolean => cafeTerms.test(message);
 
+export const eventsAtCursor = (
+  events: readonly ActivityEvent[],
+  cursor: number | null,
+): readonly ActivityEvent[] => (cursor === null ? events : events.slice(0, cursor + 1));
+
 export const projectMochi = (events: readonly ActivityEvent[]): MochiProjection => {
   let projection: MochiProjection = {
     state: 'ready',

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   isCafeTask,
   isMessageInTransit,
+  eventsAtCursor,
   projectLuca,
   projectMochi,
   projectSkynet,
@@ -61,6 +62,13 @@ describe('Mochi activity projection', () => {
 
   it('keeps Skynet empty until an action occurs', () => {
     expect(projectSkynet([])).toBeNull();
+  });
+
+  it('returns a stable historical event slice without changing the canonical history', () => {
+    const events = [taskEvent, { ...taskEvent, eventId: 'event-2', sequence: 2, logicalTime: 2 }];
+    expect(eventsAtCursor(events, 0)).toEqual([taskEvent]);
+    expect(eventsAtCursor(events, null)).toBe(events);
+    expect(events).toHaveLength(2);
   });
 
   it('routes only tasks matching Luca’s advertised café domain', () => {
