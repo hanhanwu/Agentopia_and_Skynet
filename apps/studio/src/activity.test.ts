@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { projectMochi, projectSkynet, type ActivityEvent } from './activity.ts';
+import {
+  isCafeTask,
+  isMessageInTransit,
+  projectLuca,
+  projectMochi,
+  projectSkynet,
+  type ActivityEvent,
+} from './activity.ts';
 
 const taskEvent: ActivityEvent = {
   schemaVersion: '1.0',
@@ -42,7 +49,7 @@ describe('Mochi activity projection', () => {
     });
     expect(projectMochi([taskEvent, discoveryEvent])).toMatchObject({
       state: 'discovering',
-      status: 'Discovering Luca',
+      status: 'Discovering services',
     });
     expect(projectSkynet([taskEvent, discoveryEvent])).toMatchObject({
       agentId: 'personal-assistant',
@@ -54,5 +61,45 @@ describe('Mochi activity projection', () => {
 
   it('keeps Skynet empty until an action occurs', () => {
     expect(projectSkynet([])).toBeNull();
+  });
+
+  it('routes only tasks matching Luca’s advertised café domain', () => {
+    expect(isCafeTask('Get an oat milk matcha under $8')).toBe(true);
+    expect(isCafeTask('Please book me a flight')).toBe(false);
+  });
+
+  it('shows a message in transit until Luca receives it', () => {
+    const sentEvent: ActivityEvent = {
+      ...taskEvent,
+      eventId: 'event-2',
+      sequence: 2,
+      logicalTime: 2,
+      type: 'message.sent',
+      actorId: 'personal-assistant',
+      subjectId: 'cafe-service',
+      causalParentId: taskEvent.eventId,
+      source: 'simulated',
+      payload: { message: 'Get an oat milk matcha.' },
+    };
+    const receivedEvent: ActivityEvent = {
+      ...taskEvent,
+      eventId: 'event-3',
+      sequence: 3,
+      logicalTime: 3,
+      type: 'message.received',
+      actorId: 'cafe-service',
+      subjectId: 'cafe-service',
+      causalParentId: sentEvent.eventId,
+      source: 'simulated',
+      payload: { message: 'Get an oat milk matcha.', senderId: 'personal-assistant' },
+    };
+
+    expect(isMessageInTransit([taskEvent, sentEvent])).toBe(true);
+    expect(isMessageInTransit([taskEvent, sentEvent, receivedEvent])).toBe(false);
+    expect(projectLuca([taskEvent, sentEvent, receivedEvent])).toMatchObject({
+      state: 'request-received',
+      status: 'Request received',
+    });
+    expect(projectSkynet([taskEvent, sentEvent, receivedEvent])?.agentId).toBe('cafe-service');
   });
 });

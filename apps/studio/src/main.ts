@@ -1,6 +1,13 @@
 import './styles.css';
 import { agents, isAgentId, type Agent, type AgentId } from './agents.ts';
-import { projectMochi, projectSkynet, type ActivityEvent } from './activity.ts';
+import {
+  isCafeTask,
+  isMessageInTransit,
+  projectLuca,
+  projectMochi,
+  projectSkynet,
+  type ActivityEvent,
+} from './activity.ts';
 
 const app = document.querySelector<HTMLDivElement>('#app');
 
@@ -29,7 +36,7 @@ const agentButton = (agent: Agent, placement: string) => `
     aria-pressed="false"
   >
     <span class="world-agent__status" aria-hidden="true"></span>
-    ${agent.id === 'personal-assistant' ? '<span class="agent-bubble" data-mochi-bubble hidden></span>' : ''}
+    <span class="agent-bubble" data-${agent.id === 'personal-assistant' ? 'mochi' : 'luca'}-bubble hidden></span>
     ${avatar(agent)}
     <span class="world-agent__label">
       <strong>${agent.name}</strong>
@@ -106,12 +113,13 @@ app.innerHTML = `
               <i></i><i></i><i></i><i></i>
             </div>
 
+            <div class="agent-link" data-agent-link hidden aria-hidden="true"><i></i></div>
             ${agentButton(agents['personal-assistant'], 'assistant')}
             ${agentButton(agents['cafe-service'], 'cafe')}
 
             <div class="map-hint" aria-hidden="true">
               <span class="map-hint__cursor">↖</span>
-              Select an agent to inspect
+              Activity appears in Skynet automatically
             </div>
           </div>
           <div class="world-frame__corner world-frame__corner--tl"></div>
@@ -196,7 +204,7 @@ app.innerHTML = `
           <dl class="agent-facts">
             <div><dt>Location</dt><dd data-agent-location></dd></div>
             <div><dt>Source</dt><dd>Simulated</dd></div>
-            <div><dt>Activity</dt><dd>No events yet</dd></div>
+            <div><dt>Activity</dt><dd data-agent-activity>No events yet</dd></div>
           </dl>
           <div class="coming-next">
             <span>Next step</span>
@@ -208,9 +216,9 @@ app.innerHTML = `
 
     <footer class="timeline-shell" aria-label="Shared timeline placeholder">
       <span class="timeline-shell__label">Shared timeline</span>
-      <div class="timeline-track"><i></i></div>
-      <span class="timeline-shell__time">00:00</span>
-      <span class="timeline-shell__note">Begins with the first event</span>
+      <div class="timeline-track" data-timeline-track><i></i></div>
+      <span class="timeline-shell__time" data-timeline-time>00:00</span>
+      <span class="timeline-shell__note" data-timeline-note>Begins with the first event</span>
     </footer>
   </div>
 `;
@@ -222,13 +230,18 @@ const agentInspector = document.querySelector<HTMLElement>('[data-agent-inspecto
 const chatForm = document.querySelector<HTMLFormElement>('[data-chat-form]');
 const chatInput = document.querySelector<HTMLInputElement>('[data-chat-input]');
 const mochiBubble = document.querySelector<HTMLElement>('[data-mochi-bubble]');
+const lucaBubble = document.querySelector<HTMLElement>('[data-luca-bubble]');
+const agentLink = document.querySelector<HTMLElement>('[data-agent-link]');
 const liveActivity = document.querySelector<HTMLElement>('[data-live-activity]');
+const timelineTrack = document.querySelector<HTMLElement>('[data-timeline-track]');
+const timelineTime = document.querySelector<HTMLElement>('[data-timeline-time]');
+const timelineNote = document.querySelector<HTMLElement>('[data-timeline-note]');
 
 const activityEvents: ActivityEvent[] = [];
 const runId = 'run-studio-preview';
 let eventSequence = 0;
 let selectedAgentId: AgentId | null = null;
-let discoveryTimer: number | undefined;
+let scheduledTimers: number[] = [];
 
 const field = (name: string) => document.querySelector<HTMLElement>(`[data-agent-${name}]`);
 
@@ -264,23 +277,40 @@ const selectAgent = (id: AgentId) => {
 };
 
 const renderActivity = () => {
-  const projection = projectMochi(activityEvents);
+  const mochiProjection = projectMochi(activityEvents);
+  const lucaProjection = projectLuca(activityEvents);
   const skynetProjection = projectSkynet(activityEvents);
   const mochiButton = buttons.find((button) => button.dataset.agentId === 'personal-assistant');
+  const lucaButton = buttons.find((button) => button.dataset.agentId === 'cafe-service');
 
   if (mochiButton) {
-    mochiButton.dataset.activityState = projection.state;
-    mochiButton.setAttribute('aria-label', `Select Mochi, Personal Agent. ${projection.status}`);
+    mochiButton.dataset.activityState = mochiProjection.state;
+    mochiButton.setAttribute('aria-label', `Select Mochi, Personal Agent. ${mochiProjection.status}`);
+  }
+  if (lucaButton) {
+    lucaButton.dataset.activityState = lucaProjection.state;
+    lucaButton.setAttribute('aria-label', `Select Luca, Service Agent. ${lucaProjection.status}`);
   }
 
   if (mochiBubble) {
-    mochiBubble.textContent = projection.bubble ?? '';
-    mochiBubble.hidden = projection.bubble === null;
+    mochiBubble.textContent = mochiProjection.bubble ?? '';
+    mochiBubble.hidden = mochiProjection.bubble === null;
+  }
+  if (lucaBubble) {
+    lucaBubble.textContent = lucaProjection.bubble ?? '';
+    lucaBubble.hidden = lucaProjection.bubble === null;
+  }
+  if (agentLink) {
+    agentLink.hidden = !isMessageInTransit(activityEvents);
   }
 
   if (selectedAgentId === 'personal-assistant') {
     const status = field('status');
-    if (status) status.textContent = projection.status;
+    if (status) status.textContent = mochiProjection.status;
+  }
+  if (selectedAgentId === 'cafe-service') {
+    const status = field('status');
+    if (status) status.textContent = lucaProjection.status;
   }
 
   if (skynetProjection && liveActivity) {
@@ -297,6 +327,31 @@ const renderActivity = () => {
       if (element) element.textContent = value;
     });
   }
+
+  const activityCount = document.querySelector<HTMLElement>('[data-agent-activity]');
+  if (activityCount && selectedAgentId) {
+    const count = activityEvents.filter(
+      (event) => event.actorId === selectedAgentId || event.subjectId === selectedAgentId,
+    ).length;
+    activityCount.textContent = count === 1 ? '1 event' : `${count} events`;
+  }
+
+  if (timelineTrack) {
+    timelineTrack.replaceChildren();
+    if (activityEvents.length === 0) {
+      timelineTrack.append(document.createElement('i'));
+    } else {
+      activityEvents.forEach((event) => {
+        const marker = document.createElement('span');
+        marker.className = `timeline-marker timeline-marker--${event.source}`;
+        marker.title = event.type;
+        marker.setAttribute('aria-label', `Event ${event.sequence}: ${event.type}`);
+        timelineTrack.append(marker);
+      });
+    }
+  }
+  if (timelineTime) timelineTime.textContent = `00:${String(eventSequence).padStart(2, '0')}`;
+  if (timelineNote && skynetProjection) timelineNote.textContent = skynetProjection.title;
 };
 
 const nextEnvelope = () => {
@@ -311,8 +366,20 @@ const nextEnvelope = () => {
   };
 };
 
+const appendActivityEvent = (event: ActivityEvent) => {
+  activityEvents.push(event);
+  const skynetProjection = projectSkynet(activityEvents);
+  if (skynetProjection) selectAgent(skynetProjection.agentId);
+  else renderActivity();
+};
+
+const schedule = (delay: number, callback: () => void) => {
+  scheduledTimers.push(window.setTimeout(callback, delay));
+};
+
 const sendTaskToMochi = (message: string) => {
-  if (discoveryTimer !== undefined) window.clearTimeout(discoveryTimer);
+  scheduledTimers.forEach((timer) => window.clearTimeout(timer));
+  scheduledTimers = [];
 
   const taskEvent: ActivityEvent = {
     ...nextEnvelope(),
@@ -322,21 +389,104 @@ const sendTaskToMochi = (message: string) => {
     subjectId: 'personal-assistant',
     payload: { message },
   };
-  activityEvents.push(taskEvent);
-  selectAgent('personal-assistant');
+  appendActivityEvent(taskEvent);
 
-  discoveryTimer = window.setTimeout(() => {
-    activityEvents.push({
+  let parentEventId = taskEvent.eventId;
+  schedule(800, () => {
+    const discoveryEvent: ActivityEvent = {
       ...nextEnvelope(),
       type: 'discovery.started',
       source: 'simulated',
       actorId: 'personal-assistant',
       subjectId: 'cafe-service',
-      causalParentId: taskEvent.eventId,
+      causalParentId: parentEventId,
       payload: { query: message },
+    };
+    parentEventId = discoveryEvent.eventId;
+    appendActivityEvent(discoveryEvent);
+  });
+
+  if (!isCafeTask(message)) {
+    schedule(1600, () => {
+      appendActivityEvent({
+        ...nextEnvelope(),
+        type: 'discovery.no-match',
+        source: 'simulated',
+        actorId: 'personal-assistant',
+        subjectId: 'personal-assistant',
+        causalParentId: parentEventId,
+        payload: {
+          query: message,
+          reason: 'The current registry contains no service agent advertising capabilities for this task.',
+        },
+      });
     });
-    selectAgent('personal-assistant');
-  }, 900);
+    return;
+  }
+
+  schedule(1500, () => {
+    const event: ActivityEvent = {
+      ...nextEnvelope(),
+      type: 'discovery.candidate-found',
+      source: 'simulated',
+      actorId: 'personal-assistant',
+      subjectId: 'cafe-service',
+      causalParentId: parentEventId,
+      payload: { candidateName: "Luca's Cafe" },
+    };
+    parentEventId = event.eventId;
+    appendActivityEvent(event);
+  });
+  schedule(2200, () => {
+    const event: ActivityEvent = {
+      ...nextEnvelope(),
+      type: 'discovery.candidate-validated',
+      source: 'simulated',
+      actorId: 'personal-assistant',
+      subjectId: 'cafe-service',
+      causalParentId: parentEventId,
+      payload: { capabilities: ['menu lookup', 'price constraints', 'cafe orders'] },
+    };
+    parentEventId = event.eventId;
+    appendActivityEvent(event);
+  });
+  schedule(2900, () => {
+    const event: ActivityEvent = {
+      ...nextEnvelope(),
+      type: 'discovery.agent-selected',
+      source: 'simulated',
+      actorId: 'personal-assistant',
+      subjectId: 'cafe-service',
+      causalParentId: parentEventId,
+      payload: { reason: "Luca's Cafe matches the requested café task and exposes the required capabilities." },
+    };
+    parentEventId = event.eventId;
+    appendActivityEvent(event);
+  });
+  schedule(3600, () => {
+    const event: ActivityEvent = {
+      ...nextEnvelope(),
+      type: 'message.sent',
+      source: 'simulated',
+      actorId: 'personal-assistant',
+      subjectId: 'cafe-service',
+      causalParentId: parentEventId,
+      payload: { message },
+    };
+    parentEventId = event.eventId;
+    appendActivityEvent(event);
+  });
+  schedule(4400, () => {
+    appendActivityEvent({
+      ...nextEnvelope(),
+      type: 'message.received',
+      source: 'simulated',
+      actorId: 'cafe-service',
+      subjectId: 'cafe-service',
+      causalParentId: parentEventId,
+      payload: { message, senderId: 'personal-assistant' },
+    });
+  });
 };
 
 buttons.forEach((button) => {
