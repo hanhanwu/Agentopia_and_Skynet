@@ -1,0 +1,58 @@
+import { describe, expect, it } from 'vitest';
+import { projectMochi, projectSkynet, type ActivityEvent } from './activity.ts';
+
+const taskEvent: ActivityEvent = {
+  schemaVersion: '1.0',
+  eventId: 'event-1',
+  runId: 'run-1',
+  sequence: 1,
+  logicalTime: 1,
+  source: 'observed',
+  visibility: 'studio',
+  type: 'task.requested',
+  actorId: 'user',
+  subjectId: 'personal-assistant',
+  payload: { message: 'Order an iced matcha.' },
+};
+
+describe('Mochi activity projection', () => {
+  it('starts ready for a task', () => {
+    expect(projectMochi([]).state).toBe('ready');
+  });
+
+  it('derives task receipt and discovery from the event stream', () => {
+    const discoveryEvent: ActivityEvent = {
+      schemaVersion: '1.0',
+      eventId: 'event-2',
+      runId: 'run-1',
+      sequence: 2,
+      logicalTime: 2,
+      source: 'simulated',
+      visibility: 'studio',
+      type: 'discovery.started',
+      actorId: 'personal-assistant',
+      subjectId: 'cafe-service',
+      causalParentId: taskEvent.eventId,
+      payload: { query: 'cafe menu under $8' },
+    };
+
+    expect(projectMochi([taskEvent])).toMatchObject({
+      state: 'task-received',
+      latestTask: 'Order an iced matcha.',
+    });
+    expect(projectMochi([taskEvent, discoveryEvent])).toMatchObject({
+      state: 'discovering',
+      status: 'Discovering Luca',
+    });
+    expect(projectSkynet([taskEvent, discoveryEvent])).toMatchObject({
+      agentId: 'personal-assistant',
+      title: 'Discovery started',
+      source: 'simulated',
+      causalParentId: 'event-1',
+    });
+  });
+
+  it('keeps Skynet empty until an action occurs', () => {
+    expect(projectSkynet([])).toBeNull();
+  });
+});
