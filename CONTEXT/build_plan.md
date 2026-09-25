@@ -69,17 +69,30 @@ Agentopia ◀──────────── shared history ─────
 
 ## Phase 1: Real Observable Vertical Slice
 
+### Current status and next focus
+
+The first Studio UI baseline is complete. It establishes the intended product hierarchy and interaction language, but still runs on local simulated events and must later be connected to the shared runtime and real agents.
+
+- [x] Implement the responsive two-fifths Agentopia and three-fifths Skynet workspace.
+- [x] Establish distinct visual identities: a minimal green/orange Agentopia world and an evidence-focused blue Skynet console.
+- [x] Represent the user, Mochi, and Luca with the approved agent silhouette and event-driven states.
+- [x] Show directional user-to-agent and agent-to-agent activity without displaying a Luca connection before discovery.
+- [x] Provide Skynet findings, provenance, causal event history, live viewing, and historical review for the simulated flow.
+- [x] Verify the UI baseline with automated tests, production builds, and rendered browser checks.
+
+**Next focus:** define, build, and publish the first-party agent cast behind stable public identities. Begin with the smallest real discovery and interaction path needed for Mochi to evaluate alternatives, select Luca, and complete one verifiable task. Replace simulated Studio events incrementally as each real protocol step becomes available.
+
 ### 1. Define the demonstration and visual language
 
 - [ ] Write one short vertical-slice specification covering the user task, candidate source, candidate roles, expected decisions, interaction, tool result, verification, and completion criteria.
 - [ ] Define a small first-party cast: Mochi, Luca, and several plausible alternatives with overlapping, partial, unavailable, or incompatible capabilities.
 - [ ] Map each step of the demonstration to its observable evidence, required activity events, Agentopia representation, and Skynet explanation.
-- [ ] Establish `UI_elements_design` as the source for approved visual concepts, with editable SVG masters, reviewable image previews, and short behavioral notes.
-- [ ] Define the dark visual system: color roles, typography, spacing, line weights, contrast, and reduced-motion behavior.
-- [ ] Design the base agent silhouette and a small set of distinguishable variants that remain identifiable without relying only on color.
+- [x] Establish `UI_elements_design` as the source for approved visual concepts, with editable SVG masters, reviewable image previews, and short behavioral notes.
+- [x] Define the initial dark visual system: color roles, typography, spacing, line weights, contrast, and reduced-motion behavior.
+- [x] Design the base agent silhouette and initial distinguishable variants that remain identifiable without relying only on color.
 - [ ] Design the essential activity states: idle, discovering, validating, rejected, selected, communicating, waiting, using a tool, failed, and verified.
 - [ ] Design connection, message, tool, artifact, evidence, provenance, and status primitives.
-- [ ] Approve one combined layout in which Agentopia provides orientation and Skynet receives more space for explanation and evidence.
+- [x] Approve one combined layout in which Agentopia provides orientation and Skynet receives more space for explanation and evidence.
 - [ ] Approve one storyboard showing the complete vertical slice at the intended screen size before producing additional visual assets.
 
 ### 2. Establish the shared runtime foundation
