@@ -29,6 +29,8 @@ const avatar = (agent: Agent) => {
         ? `<path class="avatar__visor" d="M85 130q47-28 95 0" />
            <circle class="avatar__eye" cx="108" cy="153" r="7" />
            <circle class="avatar__eye" cx="155" cy="153" r="7" />
+           <ellipse class="avatar__blush" cx="88" cy="176" rx="15" ry="9" />
+           <ellipse class="avatar__blush" cx="176" cy="176" rx="15" ry="9" />
            <path class="avatar__mark" d="M126 177l7 7 7-7-7-7z" />`
         : `<path class="avatar__visor" d="M61 126h154" />
            <circle class="avatar__eye" cx="111" cy="153" r="7" />

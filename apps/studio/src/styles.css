@@ -21,6 +21,7 @@
   --green: #45ff8a;
   --green-soft: rgba(69, 255, 138, .14);
   --red: #ff657a;
+  --user-white: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -100,16 +101,19 @@ button { color: inherit; }
 .avatar__body { stroke: currentColor; stroke-width: 7; stroke-linejoin: round; }
 .avatar__visor, .avatar__smile { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; opacity: .72; }
 .avatar__eye { fill: #effbff; }.avatar__mark { fill: none; stroke: currentColor; stroke-width: 5; stroke-linejoin: round; }
-.avatar--coral { color: var(--green); filter: drop-shadow(0 0 8px rgba(69,255,138,.38)); }
-.avatar--coral .avatar__body { fill: #0d2c19; }
-.avatar--coral .avatar__mark { fill: var(--green); stroke: none; }
-.avatar--mint { color: var(--orange); filter: drop-shadow(0 0 8px rgba(255,173,92,.3)); animation-delay: -.8s; }
-.avatar--mint .avatar__body { fill: #342114; }
-.avatar--mint .avatar__eye { fill: #fff4e7; }
+.avatar__blush { fill: #ff9aaa; opacity: .32; filter: blur(5px); }
+.avatar--user-white { color: var(--user-white); filter: drop-shadow(0 0 11px rgba(255,255,255,.58)); }
+.avatar--user-white .avatar__body { fill: #18222c; }
+.avatar--user-white .avatar__mark { fill: var(--user-white); stroke: none; }
+.avatar--orange { color: var(--orange); filter: drop-shadow(0 0 8px rgba(255,173,92,.3)); animation-delay: -.8s; }
+.avatar--orange .avatar__body { fill: #342114; }
+.avatar--orange .avatar__eye { fill: #fff4e7; }
 .world-agent:hover .avatar, .world-agent:focus-visible .avatar { transform: translateY(-4px) scale(1.03); }
 .world-agent::after { content: ''; position: absolute; left: 13px; top: 0; width: 128px; height: 128px; border: 1px solid transparent; border-radius: 18px; transition: .2s ease; }
-.world-agent:hover::after, .world-agent:focus-visible::after, .world-agent.is-selected::after { border-color: currentColor; box-shadow: 0 0 0 5px rgba(69,255,138,.04); }
-.world-agent--assistant { color: var(--green); }.world-agent--cafe { color: var(--orange); }
+.world-agent:hover::after, .world-agent:focus-visible::after, .world-agent.is-selected::after { border-color: currentColor; }
+.world-agent--assistant:hover::after, .world-agent--assistant:focus-visible::after, .world-agent--assistant.is-selected::after { box-shadow: 0 0 0 5px rgba(255,255,255,.06); }
+.world-agent--cafe:hover::after, .world-agent--cafe:focus-visible::after, .world-agent--cafe.is-selected::after { box-shadow: 0 0 0 5px rgba(255,173,92,.05); }
+.world-agent--assistant { color: var(--user-white); }.world-agent--cafe { color: var(--orange); }
 .world-agent__status { position: absolute; z-index: 4; top: 4px; right: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--green); border: 2px solid #071019; box-shadow: 0 0 9px var(--green); }
 .world-agent[data-activity-state='task-received'] .world-agent__status { background: #ffe16a; box-shadow: 0 0 11px #ffe16a; }
 .world-agent[data-activity-state='discovering'] .world-agent__status,
@@ -124,7 +128,7 @@ button { color: inherit; }
 .world-agent__label strong { display: block; font-size: 12px; line-height: 1.1; }
 .world-agent__label small { display: block; margin-top: 4px; color: #6f8673; font: 500 8px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
 .agent-bubble { position: absolute; z-index: 12; left: 50%; bottom: 180px; min-width: 150px; max-width: 210px; padding: 9px 11px; transform: translateX(-50%); border: 1px solid currentColor; border-radius: 8px; background: rgba(7,17,10,.97); box-shadow: 0 12px 32px rgba(0,0,0,.34); font: 700 9px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
-.world-agent--assistant .agent-bubble { color: var(--green); }
+.world-agent--assistant .agent-bubble { color: var(--user-white); }
 .world-agent--cafe .agent-bubble { color: var(--orange); }
 .agent-bubble::after { content: ''; position: absolute; left: 50%; bottom: -5px; width: 8px; height: 8px; transform: translateX(-50%) rotate(45deg); border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; background: #061018; }
 .provenance-key span { display: flex; align-items: center; gap: 6px; }

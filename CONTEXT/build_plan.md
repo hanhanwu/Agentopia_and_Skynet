@@ -26,10 +26,11 @@ The first release must demonstrate real public agents and real protocol traffic.
 - **Skynet is the primary information surface.** On wide screens, begin with roughly two-fifths of the workspace for Agentopia and three-fifths for Skynet; adapt responsively without losing either view.
 - **Agentopia provides orientation, not decorative scenery.** Use a dark, minimal, line-based world that makes agents, connections, messages, tools, waiting, failures, and outcomes easy to follow.
 - **Agents use a coherent visual grammar.** Begin with the approved arch-and-tentacle character silhouette, then distinguish agents through shape details, symbols, labels, and color rather than color alone.
+- **White linework communicates user ownership.** Mochi, the user's personal agent, is the only agent with a bright white identity outline and glow; its body remains dark and unfilled by white, consistent with the other agents. Service, external, and system agents use non-white identity colors; semantic event colors remain independent of agent identity.
 - **Animation communicates recorded state.** Motion must correspond to activity events and must not imply work, communication, or reasoning that was not observed or simulated.
 - **Skynet explains before exposing raw detail.** Present a plain-language finding first, followed by causal trace, provenance, protocol data, and exact evidence.
 - **Both views share selection and time.** Selecting an agent, connection, tool, artifact, or event updates both products against the same history and replay cursor.
-- **Important visual elements are designed before implementation.** Use `UI_elements_design` for editable SVG masters, reviewable previews, state sheets, layout studies, and short behavioral notes; implementations should reuse approved concepts rather than invent replacements.
+- **Every UI-element change requires design approval before implementation.** First update the relevant editable design master and review artifact in `UI_elements_design`, then wait for explicit user approval. Until that approval is received, do not update application code, tests, or other documentation for the proposed UI change. Approved implementations must reuse the approved concept rather than inventing a replacement.
 - **Accessibility is required.** Preserve readable contrast, keyboard access, reduced-motion behavior, and non-animated representations of meaningful states.
 
 ## Product Boundaries
@@ -74,7 +75,7 @@ Agentopia ◀──────────── shared history ─────
 The first Studio UI baseline is complete. It establishes the intended product hierarchy and interaction language, but still runs on local simulated events and must later be connected to the shared runtime and real agents.
 
 - [x] Implement the responsive two-fifths Agentopia and three-fifths Skynet workspace.
-- [x] Establish distinct visual identities: a minimal green/orange Agentopia world and an evidence-focused blue Skynet console.
+- [x] Establish distinct visual identities: bright-white linework and subtle pink facial blush for the dark-bodied user agent, non-white service agents, a minimal green/orange Agentopia world, and an evidence-focused blue Skynet console.
 - [x] Represent the user, Mochi, and Luca with the approved agent silhouette and event-driven states.
 - [x] Show directional user-to-agent and agent-to-agent activity without displaying a Luca connection before discovery.
 - [x] Provide Skynet findings, provenance, causal event history, live viewing, and historical review for the simulated flow.

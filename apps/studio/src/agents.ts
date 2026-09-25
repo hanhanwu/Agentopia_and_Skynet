@@ -1,4 +1,5 @@
 export type AgentId = 'personal-assistant' | 'cafe-service';
+export type AgentAccent = 'user-white' | 'orange';
 
 export type Agent = {
   id: AgentId;
@@ -8,7 +9,7 @@ export type Agent = {
   status: string;
   description: string;
   location: string;
-  accent: string;
+  accent: AgentAccent;
 };
 
 export const agents: Record<AgentId, Agent> = {
@@ -20,7 +21,7 @@ export const agents: Record<AgentId, Agent> = {
     status: 'Ready for a task',
     description: 'Works on your behalf and asks before taking consequential actions.',
     location: 'Town square',
-    accent: 'coral',
+    accent: 'user-white',
   },
   'cafe-service': {
     id: 'cafe-service',
@@ -30,7 +31,7 @@ export const agents: Record<AgentId, Agent> = {
     status: 'Open · 4 items available',
     description: 'Publishes a small menu, prepares orders, and reports fulfillment state.',
     location: "Luca's Cafe",
-    accent: 'mint',
+    accent: 'orange',
   },
 };
 
