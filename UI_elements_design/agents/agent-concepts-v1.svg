@@ -1,0 +1,261 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1600" viewBox="0 0 1600 1600" role="img" aria-labelledby="title description">
+  <title id="title">Agentopia agent concepts version one</title>
+  <desc id="description">Four dark-interface cartoon agent concepts built from a large upper arch and smaller lower arches, followed by a state language strip.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071019"/>
+      <stop offset="0.55" stop-color="#09131e"/>
+      <stop offset="1" stop-color="#04080e"/>
+    </linearGradient>
+    <radialGradient id="panelGlow" cx="50%" cy="25%" r="80%">
+      <stop offset="0" stop-color="#18283a" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#0a111a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="cyanGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feFlood flood-color="#52e6ff" flood-opacity="0.55"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="orangeGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feFlood flood-color="#ffad5c" flood-opacity="0.5"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="violetGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feFlood flood-color="#a98bff" flood-opacity="0.5"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="limeGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feFlood flood-color="#9be477" flood-opacity="0.48"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#1b2b3b" stroke-width="1" opacity="0.28"/>
+    </pattern>
+    <style>
+      .eyebrow { font: 600 18px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 4px; fill: #6f8499; }
+      .title { font: 700 48px Inter, ui-sans-serif, system-ui, sans-serif; fill: #eef8ff; letter-spacing: -1px; }
+      .subtitle { font: 400 20px Inter, ui-sans-serif, system-ui, sans-serif; fill: #8da0b3; }
+      .card-label { font: 700 23px Inter, ui-sans-serif, system-ui, sans-serif; fill: #eff7ff; }
+      .card-copy { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #8799aa; }
+      .tag { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.5px; }
+      .state-title { font: 700 18px Inter, ui-sans-serif, system-ui, sans-serif; fill: #eaf5ff; }
+      .state-copy { font: 400 14px Inter, ui-sans-serif, system-ui, sans-serif; fill: #8193a6; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1600" fill="url(#background)"/>
+  <rect width="1600" height="1600" fill="url(#grid)"/>
+  <circle cx="1340" cy="120" r="310" fill="#16334c" opacity="0.12"/>
+  <circle cx="175" cy="1000" r="350" fill="#211b4b" opacity="0.10"/>
+
+  <g transform="translate(60 58)">
+    <text class="eyebrow" x="0" y="0">AGENTOPIA · VISUAL EXPLORATION 01</text>
+    <text class="title" x="0" y="61">Arch creatures for an observable agent world</text>
+    <text class="subtitle" x="0" y="101">One shared grammar · distinct silhouettes · readable at map scale · motion reserved for real activity</text>
+  </g>
+
+  <!-- Concept A -->
+  <g transform="translate(55 205)">
+    <rect width="345" height="455" rx="28" fill="#0b141f" stroke="#223447" stroke-width="2"/>
+    <rect width="345" height="455" rx="28" fill="url(#panelGlow)"/>
+    <g transform="translate(40 50)" filter="url(#cyanGlow)">
+      <path d="M48 205V140C48 65 91 25 132 25s84 40 84 115v65
+               c0 21-15 37-34 37s-34-16-34-37
+               c0 21-15 37-34 37s-34-16-34-37
+               c0 21-14 37-32 37s-32-16-32-37z"
+            fill="#0d2733" stroke="#52e6ff" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M85 130q47-28 95 0" fill="none" stroke="#52e6ff" stroke-width="5" stroke-linecap="round" opacity="0.65"/>
+      <circle cx="108" cy="153" r="7" fill="#dffcff"/>
+      <circle cx="155" cy="153" r="7" fill="#dffcff"/>
+      <path d="M126 177l7 7 7-7-7-7z" fill="#52e6ff"/>
+    </g>
+    <text class="tag" x="24" y="326" fill="#52e6ff">A · SOFT ARC</text>
+    <text class="card-label" x="24" y="365">Friendly navigator</text>
+    <text class="card-copy" x="24" y="395">Balanced dome, three soft feet,</text>
+    <text class="card-copy" x="24" y="420">calm face and central identity mark.</text>
+  </g>
+
+  <!-- Concept B -->
+  <g transform="translate(435 205)">
+    <rect width="345" height="455" rx="28" fill="#0b141f" stroke="#223447" stroke-width="2"/>
+    <rect width="345" height="455" rx="28" fill="url(#panelGlow)"/>
+    <g transform="translate(34 56)" filter="url(#orangeGlow)">
+      <path d="M38 196V149C38 71 87 31 138 31s100 40 100 118v47
+               c0 25-18 43-40 43-18 0-32-11-38-28-6 17-20 28-38 28s-32-11-38-28c-6 17-20 28-38 28-22 0-40-18-40-43z"
+            fill="#322015" stroke="#ffad5c" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M61 126h154" stroke="#ffad5c" stroke-width="5" stroke-linecap="round" opacity="0.72"/>
+      <circle cx="111" cy="153" r="7" fill="#fff3e5"/>
+      <circle cx="166" cy="153" r="7" fill="#fff3e5"/>
+      <path d="M126 181q12 9 24 0" fill="none" stroke="#ffcf9e" stroke-width="4" stroke-linecap="round"/>
+      <path d="M118 86h40l11 20h-62z" fill="none" stroke="#ffad5c" stroke-width="5" stroke-linejoin="round"/>
+    </g>
+    <text class="tag" x="24" y="326" fill="#ffad5c">B · WIDE CANOPY</text>
+    <text class="card-label" x="24" y="365">Service specialist</text>
+    <text class="card-copy" x="24" y="395">Broader stance and task badge create</text>
+    <text class="card-copy" x="24" y="420">a dependable, grounded personality.</text>
+  </g>
+
+  <!-- Concept C -->
+  <g transform="translate(815 205)">
+    <rect width="345" height="455" rx="28" fill="#0b141f" stroke="#223447" stroke-width="2"/>
+    <rect width="345" height="455" rx="28" fill="url(#panelGlow)"/>
+    <g transform="translate(49 42)" filter="url(#violetGlow)">
+      <path d="M123 29v-19M106 16l17 13 18-13" fill="none" stroke="#a98bff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M39 210V133C39 65 73 35 123 35s84 30 84 98v77
+               c0 20-14 35-31 35-18 0-31-15-31-35
+               c0 20-10 35-22 35s-22-15-22-35
+               c0 20-13 35-31 35-17 0-31-15-31-35z"
+            fill="#211b3a" stroke="#a98bff" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M76 137h94" stroke="#a98bff" stroke-width="5" stroke-linecap="round" opacity="0.65"/>
+      <path d="M91 159h18M137 159h18" stroke="#f0ebff" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="123" cy="190" r="13" fill="none" stroke="#a98bff" stroke-width="4"/>
+      <circle cx="123" cy="190" r="4" fill="#d8ceff"/>
+    </g>
+    <text class="tag" x="24" y="326" fill="#a98bff">C · SIGNAL CROWN</text>
+    <text class="card-label" x="24" y="365">Network observer</text>
+    <text class="card-copy" x="24" y="395">Taller dome and antenna suggest an</text>
+    <text class="card-copy" x="24" y="420">agent specialized in finding signals.</text>
+  </g>
+
+  <!-- Concept D -->
+  <g transform="translate(1195 205)">
+    <rect width="345" height="455" rx="28" fill="#0b141f" stroke="#223447" stroke-width="2"/>
+    <rect width="345" height="455" rx="28" fill="url(#panelGlow)"/>
+    <g transform="translate(48 67)" filter="url(#limeGlow)">
+      <path d="M31 188V139C31 73 69 38 124 38s93 35 93 101v49
+               c0 20-13 35-30 35-18 0-30-15-30-35
+               c0 20-15 35-33 35s-33-15-33-35
+               c0 20-12 35-30 35-17 0-30-15-30-35z"
+            fill="#1a2d1c" stroke="#9be477" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M31 151L12 170M217 151l19 19" stroke="#9be477" stroke-width="7" stroke-linecap="round"/>
+      <path d="M78 132l22 13-22 13M170 132l-22 13 22 13" fill="none" stroke="#e8ffdf" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="105" y="171" width="38" height="24" rx="12" fill="none" stroke="#9be477" stroke-width="4"/>
+    </g>
+    <text class="tag" x="24" y="326" fill="#9be477">D · COMPACT SCOUT</text>
+    <text class="card-label" x="24" y="365">Fast challenger</text>
+    <text class="card-copy" x="24" y="395">Compact body and side feelers create</text>
+    <text class="card-copy" x="24" y="420">a sharper, more energetic silhouette.</text>
+  </g>
+
+  <!-- State language -->
+  <g transform="translate(55 710)">
+    <text class="eyebrow" x="0" y="0">SHARED STATE LANGUAGE</text>
+    <text class="subtitle" x="0" y="38">The character remains still; surrounding geometry carries most system meaning.</text>
+
+    <g transform="translate(0 75)">
+      <rect width="280" height="235" rx="24" fill="#0a131d" stroke="#203246" stroke-width="2"/>
+      <g transform="translate(81 28) scale(.48)" filter="url(#cyanGlow)">
+        <path d="M48 205V140C48 65 91 25 132 25s84 40 84 115v65c0 21-15 37-34 37s-34-16-34-37c0 21-15 37-34 37s-34-16-34-37c0 21-14 37-32 37s-32-16-32-37z" fill="#0d2733" stroke="#52e6ff" stroke-width="7"/>
+      </g>
+      <circle cx="140" cy="99" r="66" fill="none" stroke="#52e6ff" stroke-width="2" opacity="0.22"/>
+      <text class="state-title" x="20" y="175">Idle / available</text>
+      <text class="state-copy" x="20" y="202">One quiet breathing ring.</text>
+    </g>
+
+    <g transform="translate(300 75)">
+      <rect width="280" height="235" rx="24" fill="#0a131d" stroke="#203246" stroke-width="2"/>
+      <g transform="translate(81 28) scale(.48)" filter="url(#cyanGlow)">
+        <path d="M48 205V140C48 65 91 25 132 25s84 40 84 115v65c0 21-15 37-34 37s-34-16-34-37c0 21-15 37-34 37s-34-16-34-37c0 21-14 37-32 37s-32-16-32-37z" fill="#0d2733" stroke="#52e6ff" stroke-width="7"/>
+      </g>
+      <path d="M51 103q89-86 178 0M34 103q106-116 212 0" fill="none" stroke="#52e6ff" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+      <text class="state-title" x="20" y="175">Discovering</text>
+      <text class="state-copy" x="20" y="202">Search waves expose candidates.</text>
+    </g>
+
+    <g transform="translate(600 75)">
+      <rect width="280" height="235" rx="24" fill="#0a131d" stroke="#4a2930" stroke-width="2"/>
+      <g transform="translate(81 28) scale(.48)" opacity="0.48">
+        <path d="M48 205V140C48 65 91 25 132 25s84 40 84 115v65c0 21-15 37-34 37s-34-16-34-37c0 21-15 37-34 37s-34-16-34-37c0 21-14 37-32 37s-32-16-32-37z" fill="#27171c" stroke="#ff657a" stroke-width="7"/>
+      </g>
+      <path d="M56 49l168 90" stroke="#ff657a" stroke-width="5" stroke-linecap="round" stroke-dasharray="9 12"/>
+      <text class="state-title" x="20" y="175">Rejected / failed</text>
+      <text class="state-copy" x="20" y="202">Broken path, reduced presence.</text>
+    </g>
+
+    <g transform="translate(900 75)">
+      <rect width="280" height="235" rx="24" fill="#0a131d" stroke="#4d4029" stroke-width="2"/>
+      <g transform="translate(81 28) scale(.48)" filter="url(#orangeGlow)">
+        <path d="M48 205V140C48 65 91 25 132 25s84 40 84 115v65c0 21-15 37-34 37s-34-16-34-37c0 21-15 37-34 37s-34-16-34-37c0 21-14 37-32 37s-32-16-32-37z" fill="#322015" stroke="#ffad5c" stroke-width="7"/>
+      </g>
+      <path d="M44 36h192v116H44z" fill="none" stroke="#ffad5c" stroke-width="3" stroke-dasharray="7 8" opacity="0.8"/>
+      <path d="M140 20v18M140 150v18M27 94h18M235 94h18" stroke="#ffad5c" stroke-width="4" stroke-linecap="round"/>
+      <text class="state-title" x="20" y="175">Selected</text>
+      <text class="state-copy" x="20" y="202">Focus frame marks the decision.</text>
+    </g>
+
+    <g transform="translate(1200 75)">
+      <rect width="290" height="235" rx="24" fill="#0a131d" stroke="#29413a" stroke-width="2"/>
+      <g transform="translate(37 28) scale(.48)" filter="url(#cyanGlow)">
+        <path d="M48 205V140C48 65 91 25 132 25s84 40 84 115v65c0 21-15 37-34 37s-34-16-34-37c0 21-15 37-34 37s-34-16-34-37c0 21-14 37-32 37s-32-16-32-37z" fill="#0d2733" stroke="#52e6ff" stroke-width="7"/>
+      </g>
+      <path d="M142 91h55" stroke="#75f0bd" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 9"/>
+      <circle cx="164" cy="91" r="5" fill="#75f0bd"/>
+      <rect x="198" y="55" width="60" height="72" rx="15" fill="#102a24" stroke="#75f0bd" stroke-width="4"/>
+      <path d="M215 91h26M228 78v26" stroke="#dffff2" stroke-width="4" stroke-linecap="round"/>
+      <text class="state-title" x="20" y="175">Tool interaction</text>
+      <text class="state-copy" x="20" y="202">A separate node keeps work visible.</text>
+    </g>
+  </g>
+
+  <!-- Scale and approval checks -->
+  <g transform="translate(55 1090)">
+    <path d="M0 0h1490" stroke="#24374a" stroke-width="2"/>
+    <text class="eyebrow" x="0" y="58">MAP-SCALE CHECK</text>
+    <text class="subtitle" x="0" y="96">Silhouette and identity must survive before facial detail does.</text>
+
+    <g transform="translate(0 135)">
+      <rect width="800" height="300" rx="26" fill="#09131d" stroke="#203247" stroke-width="2"/>
+      <path d="M65 225H735" stroke="#213548" stroke-width="2" stroke-dasharray="4 10"/>
+
+      <g transform="translate(65 64) scale(.55)" filter="url(#cyanGlow)">
+        <path d="M48 205V140C48 65 91 25 132 25s84 40 84 115v65c0 21-15 37-34 37s-34-16-34-37c0 21-15 37-34 37s-34-16-34-37c0 21-14 37-32 37s-32-16-32-37z" fill="#0d2733" stroke="#52e6ff" stroke-width="7"/>
+      </g>
+      <text class="tag" x="101" y="250" fill="#52e6ff">MOCHI</text>
+
+      <g transform="translate(262 69) scale(.52)" filter="url(#orangeGlow)">
+        <path d="M38 196V149C38 71 87 31 138 31s100 40 100 118v47c0 25-18 43-40 43-18 0-32-11-38-28-6 17-20 28-38 28s-32-11-38-28c-6 17-20 28-38 28-22 0-40-18-40-43z" fill="#322015" stroke="#ffad5c" stroke-width="7"/>
+        <path d="M118 86h40l11 20h-62z" fill="none" stroke="#ffad5c" stroke-width="5"/>
+      </g>
+      <text class="tag" x="309" y="250" fill="#ffad5c">LUCA</text>
+
+      <g transform="translate(495 63) scale(.52)" filter="url(#violetGlow)">
+        <path d="M123 29v-19M106 16l17 13 18-13" fill="none" stroke="#a98bff" stroke-width="5" stroke-linecap="round"/>
+        <path d="M39 210V133C39 65 73 35 123 35s84 30 84 98v77c0 20-14 35-31 35-18 0-31-15-31-35c0 20-10 35-22 35s-22-15-22-35c0 20-13 35-31 35-17 0-31-15-31-35z" fill="#211b3a" stroke="#a98bff" stroke-width="7"/>
+      </g>
+      <text class="tag" x="521" y="250" fill="#a98bff">SIGNAL</text>
+
+      <g transform="translate(647 83) scale(.44)" filter="url(#limeGlow)">
+        <path d="M31 188V139C31 73 69 38 124 38s93 35 93 101v49c0 20-13 35-30 35-18 0-30-15-30-35c0 20-15 35-33 35s-33-15-33-35c0 20-12 35-30 35-17 0-30-15-30-35z" fill="#1a2d1c" stroke="#9be477" stroke-width="7"/>
+        <path d="M31 151L12 170M217 151l19 19" stroke="#9be477" stroke-width="7" stroke-linecap="round"/>
+      </g>
+      <text class="tag" x="663" y="250" fill="#9be477">SCOUT</text>
+    </g>
+
+    <g transform="translate(835 135)">
+      <rect width="655" height="300" rx="26" fill="#09131d" stroke="#203247" stroke-width="2"/>
+      <text class="eyebrow" x="30" y="52">APPROVAL CHECK</text>
+      <g transform="translate(30 85)">
+        <rect width="24" height="24" rx="6" fill="#0d1c28" stroke="#52e6ff" stroke-width="2"/>
+        <text class="state-title" x="42" y="20">Choose the shared silhouette family</text>
+        <text class="state-copy" x="42" y="44">soft, wide, signal, compact—or a combination</text>
+      </g>
+      <g transform="translate(30 157)">
+        <rect width="24" height="24" rx="6" fill="#0d1c28" stroke="#ffad5c" stroke-width="2"/>
+        <text class="state-title" x="42" y="20">Choose the personality level</text>
+        <text class="state-copy" x="42" y="44">friendly faces, neutral visors, or role-specific mix</text>
+      </g>
+      <g transform="translate(30 229)">
+        <rect width="24" height="24" rx="6" fill="#0d1c28" stroke="#a98bff" stroke-width="2"/>
+        <text class="state-title" x="42" y="20">Approve the restrained glow language</text>
+        <text class="state-copy" x="42" y="44">identity color on agents; semantic color on events</text>
+      </g>
+    </g>
+  </g>
+</svg>

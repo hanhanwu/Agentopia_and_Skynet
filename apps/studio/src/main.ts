@@ -16,17 +16,29 @@ if (!app) {
   throw new Error('Studio root was not found.');
 }
 
-const avatar = (agent: Agent) => `
-  <span class="avatar avatar--${agent.accent}" aria-hidden="true">
-    <span class="avatar__shadow"></span>
-    <span class="avatar__legs"></span>
-    <span class="avatar__body"></span>
-    <span class="avatar__head"></span>
-    <span class="avatar__hair"></span>
-    <span class="avatar__face"></span>
-    <span class="avatar__detail"></span>
-  </span>
-`;
+const avatar = (agent: Agent) => {
+  const isMochi = agent.id === 'personal-assistant';
+  const body = isMochi
+    ? 'M48 205V140C48 65 91 25 132 25s84 40 84 115v65c0 21-15 37-34 37s-34-16-34-37c0 21-15 37-34 37s-34-16-34-37c0 21-14 37-32 37s-32-16-32-37z'
+    : 'M38 196V149C38 71 87 31 138 31s100 40 100 118v47c0 25-18 43-40 43-18 0-32-11-38-28-6 17-20 28-38 28s-32-11-38-28c-6 17-20 28-38 28-22 0-40-18-40-43z';
+
+  return `
+    <svg class="avatar avatar--${agent.accent}" viewBox="0 0 276 270" aria-hidden="true">
+      <path class="avatar__glow" d="${body}" />
+      <path class="avatar__body" d="${body}" />
+      ${isMochi
+        ? `<path class="avatar__visor" d="M85 130q47-28 95 0" />
+           <circle class="avatar__eye" cx="108" cy="153" r="7" />
+           <circle class="avatar__eye" cx="155" cy="153" r="7" />
+           <path class="avatar__mark" d="M126 177l7 7 7-7-7-7z" />`
+        : `<path class="avatar__visor" d="M61 126h154" />
+           <circle class="avatar__eye" cx="111" cy="153" r="7" />
+           <circle class="avatar__eye" cx="166" cy="153" r="7" />
+           <path class="avatar__smile" d="M126 181q12 9 24 0" />
+           <path class="avatar__mark" d="M118 86h40l11 20h-62z" />`}
+    </svg>
+  `;
+};
 
 const agentButton = (agent: Agent, placement: string) => `
   <button
@@ -48,69 +60,43 @@ const agentButton = (agent: Agent, placement: string) => `
 
 app.innerHTML = `
   <div class="app-shell">
-    <header class="topbar">
-      <h1 class="brand">Agentopia</h1>
-    </header>
-
     <main class="studio" aria-label="Agentopia Studio preview">
       <section class="world-panel" aria-label="Agentopia world">
+        <div class="panel-heading">
+          <h2 data-text="AGENTOPIA">AGENTOPIA</h2>
+          <span class="world-state"><i></i> ONLINE</span>
+        </div>
+
         <div class="world-frame">
-          <div class="world-scene" role="group" aria-label="Luma town map with two agents">
-            <div class="sun-glow"></div>
-            <div class="hill hill--one"></div>
-            <div class="hill hill--two"></div>
-            <div class="river" aria-hidden="true"><i></i><i></i><i></i></div>
-            <div class="bridge" aria-hidden="true"></div>
-            <div class="path path--main" aria-hidden="true"></div>
-            <div class="path path--cafe" aria-hidden="true"></div>
+          <div class="world-scene" role="group" aria-label="Interaction field with the user, Mochi, and Luca">
+            <div class="world-coordinates" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span></div>
+            <svg class="world-network" viewBox="0 0 600 620" preserveAspectRatio="none" aria-hidden="true">
+              <path class="network-line network-line--user" data-user-link d="M72 530 C145 490 176 420 245 342" />
+              <path class="network-line network-line--agent" data-agent-link hidden d="M275 310 C355 238 403 202 510 160" />
+            </svg>
 
-            <div class="cafe" aria-label="Luca's Cafe">
-              <span class="cafe__chimney"></span>
-              <span class="cafe__roof"></span>
-              <span class="cafe__sign">Luca's Cafe</span>
-              <span class="cafe__awning"></span>
-              <span class="cafe__door"></span>
-              <span class="cafe__window cafe__window--one"></span>
-              <span class="cafe__window cafe__window--two"></span>
-              <span class="cafe__planter"></span>
+            <div class="world-zone world-zone--local"></div>
+            <div class="world-zone world-zone--service"></div>
+
+            <div class="user-node" aria-label="You, task requester">
+              <span class="user-node__pulse"></span>
+              <span class="user-node__core">YOU</span>
             </div>
 
-            <div class="town-square" aria-hidden="true">
-              <span class="town-square__center"></span>
-              <span class="bench bench--one"></span>
-              <span class="bench bench--two"></span>
-            </div>
-
-            <div class="tree tree--one" aria-hidden="true"><i></i></div>
-            <div class="tree tree--two" aria-hidden="true"><i></i></div>
-            <div class="tree tree--three" aria-hidden="true"><i></i></div>
-            <div class="tree tree--four" aria-hidden="true"><i></i></div>
-            <div class="flower-bed flower-bed--one" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i><i></i>
-            </div>
-            <div class="flower-bed flower-bed--two" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i>
-            </div>
-            <div class="flower-bed flower-bed--three" aria-hidden="true">
-              <i></i><i></i><i></i><i></i>
-            </div>
-
-            <div class="agent-link" data-agent-link hidden aria-hidden="true"><i></i></div>
+            <div class="signal-packet" data-agent-packet hidden aria-hidden="true"></div>
             ${agentButton(agents['personal-assistant'], 'assistant')}
             ${agentButton(agents['cafe-service'], 'cafe')}
 
+            <div class="world-legend" aria-label="World legend">
+              <span><i class="legend-dot legend-dot--observed"></i>Observed</span>
+              <span><i class="legend-dot legend-dot--simulated"></i>Simulated</span>
+              <span><i class="legend-line"></i>Interaction</span>
+            </div>
           </div>
-          <div class="world-frame__corner world-frame__corner--tl"></div>
-          <div class="world-frame__corner world-frame__corner--tr"></div>
-          <div class="world-frame__corner world-frame__corner--bl"></div>
-          <div class="world-frame__corner world-frame__corner--br"></div>
         </div>
 
         <form class="chat-composer" data-chat-form>
-          <div class="mochi-portrait" aria-hidden="true">
-            <span class="mochi-portrait__hair"></span>
-            <span class="mochi-portrait__face"></span>
-          </div>
+          <div class="composer-agent">${avatar(agents['personal-assistant'])}</div>
           <label class="chat-composer__field">
             <input
               name="message"
@@ -123,7 +109,7 @@ app.innerHTML = `
             />
           </label>
           <button type="submit" data-chat-send>
-            <i aria-hidden="true">↗</i>
+            <span>Send</span><i aria-hidden="true">↗</i>
           </button>
         </form>
       </section>
@@ -131,53 +117,75 @@ app.innerHTML = `
       <aside class="inspector-panel" aria-labelledby="skynet-title">
         <div class="inspector-heading">
           <div>
-            <h2 id="skynet-title">Skynet</h2>
-            <p class="inspector-context" data-inspector-context>Waiting for activity</p>
+            <h2 id="skynet-title" data-text="SKYNET">SKYNET</h2>
+            <p class="inspector-context" data-inspector-context hidden></p>
           </div>
-          <span class="inspector-badge"><i></i> <span data-skynet-mode>Live</span></span>
+          <div class="inspector-controls">
+            <span class="simulation-badge">SIMULATED</span>
+            <span class="inspector-badge"><i></i> <span data-skynet-mode>Live</span></span>
+          </div>
+        </div>
+
+        <div class="provenance-key" aria-label="Provenance key">
+          <span><i class="legend-dot legend-dot--observed"></i>Observed</span>
+          <span><i class="legend-dot legend-dot--reported"></i>Reported</span>
+          <span><i class="legend-dot legend-dot--derived"></i>Derived</span>
+          <span><i class="legend-dot legend-dot--simulated"></i>Simulated</span>
         </div>
 
         <div class="empty-inspector" data-empty-inspector>
-          <div class="radar" aria-hidden="true">
-            <span class="radar__ring radar__ring--one"></span>
-            <span class="radar__ring radar__ring--two"></span>
-            <span class="radar__sweep"></span>
-            <span class="radar__dot"></span>
+          <div class="empty-trace" aria-hidden="true">
+            <span class="empty-trace__node">01</span>
+            <i></i>
+            <span class="empty-trace__node">02</span>
+            <i></i>
+            <span class="empty-trace__node">03</span>
           </div>
-          <h3>Waiting for agent activity</h3>
-          <p>Skynet will open the relevant agent automatically when an action occurs.</p>
+          <h3>Send Mochi a task.</h3>
+          <div class="empty-inspector__promise">
+            <span>What happened</span>
+            <span>Why it happened</span>
+            <span>What proves it</span>
+          </div>
         </div>
 
         <div class="agent-inspector" data-agent-inspector hidden>
-          <div class="agent-card__top">
-            <div class="agent-card__avatar" data-agent-avatar></div>
-            <div>
-              <p class="agent-card__role" data-agent-role></p>
-              <h3 data-agent-name></h3>
-            </div>
-          </div>
-          <div class="status-row"><span></span><strong data-agent-status></strong></div>
-          <section class="live-activity" data-live-activity hidden aria-live="polite">
-            <h4 data-activity-title></h4>
-            <div class="live-activity__detail" data-activity-detail></div>
-            <div class="evidence">
-              <dl>
-                <div><dt>Source</dt><dd data-activity-source></dd></div>
-                <div><dt>Event</dt><dd data-activity-event></dd></div>
-                <div><dt>Caused by</dt><dd data-activity-parent></dd></div>
-              </dl>
-            </div>
-          </section>
-          <section class="event-history" data-event-history-section hidden>
-            <div class="event-history__heading">
+          <div class="inspector-overview">
+            <div class="agent-card__top">
+              <div class="agent-card__avatar" data-agent-avatar></div>
               <div>
-                <span>Event history</span>
-                <small data-event-count>0 events</small>
+                <p class="agent-card__role" data-agent-role></p>
+                <h3 data-agent-name></h3>
               </div>
-              <button type="button" data-return-live hidden>Return to live</button>
             </div>
-            <div class="event-history__list" data-event-history-list></div>
-          </section>
+            <div class="status-row"><span></span><strong data-agent-status></strong></div>
+          </div>
+
+          <div class="analysis-grid">
+            <section class="live-activity" data-live-activity hidden aria-live="polite">
+              <p>Current finding</p>
+              <h4 data-activity-title></h4>
+              <div class="live-activity__detail" data-activity-detail></div>
+              <div class="evidence">
+                <p>Evidence envelope</p>
+                <dl>
+                  <div><dt>Provenance</dt><dd data-activity-source></dd></div>
+                  <div><dt>Event ID</dt><dd data-activity-event></dd></div>
+                  <div><dt>Causal parent</dt><dd data-activity-parent></dd></div>
+                </dl>
+              </div>
+            </section>
+            <section class="event-history" data-event-history-section hidden>
+              <div class="event-history__heading">
+                <div>
+                  <span>Causal event trail</span>
+                  <small data-event-count>0 events</small>
+                </div>
+                <button type="button" data-return-live hidden>Return to live</button>
+              </div>
+              <div class="event-history__list" data-event-history-list></div>
+            </section>
+          </div>
         </div>
       </aside>
     </main>
@@ -192,7 +200,9 @@ const chatForm = document.querySelector<HTMLFormElement>('[data-chat-form]');
 const chatInput = document.querySelector<HTMLInputElement>('[data-chat-input]');
 const mochiBubble = document.querySelector<HTMLElement>('[data-mochi-bubble]');
 const lucaBubble = document.querySelector<HTMLElement>('[data-luca-bubble]');
-const agentLink = document.querySelector<HTMLElement>('[data-agent-link]');
+const userLink = document.querySelector<SVGPathElement>('[data-user-link]');
+const agentLink = document.querySelector<SVGPathElement>('[data-agent-link]');
+const agentPacket = document.querySelector<HTMLElement>('[data-agent-packet]');
 const liveActivity = document.querySelector<HTMLElement>('[data-live-activity]');
 const eventHistorySection = document.querySelector<HTMLElement>('[data-event-history-section]');
 const eventHistoryList = document.querySelector<HTMLElement>('[data-event-history-list]');
@@ -264,7 +274,13 @@ const renderActivity = () => {
     lucaBubble.hidden = lucaProjection.bubble === null;
   }
   if (agentLink) {
-    agentLink.hidden = !isMessageInTransit(displayedEvents);
+    agentLink.toggleAttribute('hidden', !isMessageInTransit(displayedEvents));
+  }
+  if (agentPacket) {
+    agentPacket.hidden = !isMessageInTransit(displayedEvents);
+  }
+  if (userLink) {
+    userLink.classList.toggle('is-active', displayedEvents.some((event) => event.type === 'task.requested'));
   }
 
   if (selectedAgentId === 'personal-assistant') {
@@ -303,8 +319,9 @@ const renderActivity = () => {
       button.type = 'button';
       button.className = 'event-history__item';
       button.classList.toggle('is-current', index === (eventCursor ?? activityEvents.length - 1));
-      button.innerHTML = `<span class="event-history__sequence">${String(event.sequence).padStart(2, '0')}</span><span class="event-history__copy"><strong></strong></span><i></i>`;
+      button.innerHTML = `<span class="event-history__sequence">${String(event.sequence).padStart(2, '0')}</span><span class="event-history__copy"><strong></strong><small></small></span><i></i>`;
       button.querySelector('strong')!.textContent = eventProjection.title;
+      button.querySelector('small')!.textContent = `${event.source} · ${event.type}`;
       button.setAttribute('aria-label', `Review event ${event.sequence}: ${eventProjection.title}`);
       button.addEventListener('click', () => showHistoricalEvent(index));
       eventHistoryList.append(button);
