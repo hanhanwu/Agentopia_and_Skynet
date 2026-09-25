@@ -3,7 +3,6 @@ import { agents, isAgentId, type Agent, type AgentId } from './agents.ts';
 import {
   eventsAtCursor,
   isCafeTask,
-  isMessageInTransit,
   projectLuca,
   projectMochi,
   projectSkynet,
@@ -71,8 +70,18 @@ app.innerHTML = `
           <div class="world-scene" role="group" aria-label="Interaction field with the user, Mochi, and Luca">
             <div class="world-coordinates" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span></div>
             <svg class="world-network" viewBox="0 0 600 620" preserveAspectRatio="none" aria-hidden="true">
-              <path class="network-line network-line--user" data-user-link d="M72 530 C145 490 176 420 245 342" />
-              <path class="network-line network-line--agent" data-agent-link hidden d="M275 310 C355 238 403 202 510 160" />
+              <path id="user-flow-path" class="network-line network-line--user" data-user-link d="M72 530 C145 490 176 420 245 342" />
+              <polygon class="network-arrow network-arrow--user" data-user-arrow points="-7,-4 7,0 -7,4" hidden>
+                <animateMotion dur="1.7s" repeatCount="indefinite" rotate="auto">
+                  <mpath href="#user-flow-path" />
+                </animateMotion>
+              </polygon>
+              <path id="agent-flow-path" class="network-line network-line--agent" data-agent-link hidden d="M275 310 C355 238 403 202 510 160" />
+              <polygon class="network-arrow network-arrow--agent" data-agent-arrow points="-7,-4 7,0 -7,4" hidden>
+                <animateMotion dur="1.35s" repeatCount="indefinite" rotate="auto">
+                  <mpath href="#agent-flow-path" />
+                </animateMotion>
+              </polygon>
             </svg>
 
             <div class="world-zone world-zone--local"></div>
@@ -83,15 +92,9 @@ app.innerHTML = `
               <span class="user-node__core">YOU</span>
             </div>
 
-            <div class="signal-packet" data-agent-packet hidden aria-hidden="true"></div>
             ${agentButton(agents['personal-assistant'], 'assistant')}
             ${agentButton(agents['cafe-service'], 'cafe')}
 
-            <div class="world-legend" aria-label="World legend">
-              <span><i class="legend-dot legend-dot--observed"></i>Observed</span>
-              <span><i class="legend-dot legend-dot--simulated"></i>Simulated</span>
-              <span><i class="legend-line"></i>Interaction</span>
-            </div>
           </div>
         </div>
 
@@ -121,7 +124,6 @@ app.innerHTML = `
             <p class="inspector-context" data-inspector-context hidden></p>
           </div>
           <div class="inspector-controls">
-            <span class="simulation-badge">SIMULATED</span>
             <span class="inspector-badge"><i></i> <span data-skynet-mode>Live</span></span>
           </div>
         </div>
@@ -202,7 +204,8 @@ const mochiBubble = document.querySelector<HTMLElement>('[data-mochi-bubble]');
 const lucaBubble = document.querySelector<HTMLElement>('[data-luca-bubble]');
 const userLink = document.querySelector<SVGPathElement>('[data-user-link]');
 const agentLink = document.querySelector<SVGPathElement>('[data-agent-link]');
-const agentPacket = document.querySelector<HTMLElement>('[data-agent-packet]');
+const userArrow = document.querySelector<SVGPolygonElement>('[data-user-arrow]');
+const agentArrow = document.querySelector<SVGPolygonElement>('[data-agent-arrow]');
 const liveActivity = document.querySelector<HTMLElement>('[data-live-activity]');
 const eventHistorySection = document.querySelector<HTMLElement>('[data-event-history-section]');
 const eventHistoryList = document.querySelector<HTMLElement>('[data-event-history-list]');
@@ -273,15 +276,24 @@ const renderActivity = () => {
     lucaBubble.textContent = lucaProjection.bubble ?? '';
     lucaBubble.hidden = lucaProjection.bubble === null;
   }
-  if (agentLink) {
-    agentLink.toggleAttribute('hidden', !isMessageInTransit(displayedEvents));
-  }
-  if (agentPacket) {
-    agentPacket.hidden = !isMessageInTransit(displayedEvents);
-  }
+  const latestTaskIndex = displayedEvents.map((event) => event.type).lastIndexOf('task.requested');
+  const currentInteractionEvents = latestTaskIndex >= 0 ? displayedEvents.slice(latestTaskIndex) : [];
+  const latestEvent = currentInteractionEvents.at(-1);
+  const hasUserInteraction = latestEvent?.type === 'task.requested';
+  const hasDiscoveredLuca = currentInteractionEvents.some((event) =>
+    event.type === 'discovery.candidate-found'
+    || event.type === 'discovery.candidate-validated'
+    || event.type === 'discovery.agent-selected'
+    || event.type === 'message.sent'
+    || event.type === 'message.received');
+  const hasAgentInteraction = latestEvent?.type === 'message.sent' || latestEvent?.type === 'message.received';
+  agentLink?.toggleAttribute('hidden', !hasDiscoveredLuca);
+  agentLink?.classList.toggle('is-active', hasAgentInteraction);
+  agentArrow?.toggleAttribute('hidden', !hasAgentInteraction);
   if (userLink) {
-    userLink.classList.toggle('is-active', displayedEvents.some((event) => event.type === 'task.requested'));
+    userLink.classList.toggle('is-active', hasUserInteraction);
   }
+  userArrow?.toggleAttribute('hidden', !hasUserInteraction);
 
   if (selectedAgentId === 'personal-assistant') {
     const status = field('status');
